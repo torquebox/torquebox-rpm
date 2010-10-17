@@ -6,10 +6,6 @@ require 'pp'
 require 'bundler'
 require 'fileutils'
 
-Gem.platforms.unshift( Gem::Platform::JAVA )
-
-Bundler.settings[:path] = File.join( Dir.pwd, 'cache' )
-
 
 module Gem
   class Requirement
@@ -52,6 +48,15 @@ end
 
 class BundleConverter
 
+  EXCLUDES = {
+    'columnize'=>'03',
+    'rake'=>'08',
+    'rspec'=>'13',
+    'ruby-debug'=>'010',
+    'ruby-debug-base'=>'010',
+    'sources'=>'00',
+  }
+
   attr_accessor :gemfile
   attr_accessor :ruby_config
   attr_accessor :definition
@@ -68,16 +73,25 @@ class BundleConverter
 
   def dump_specs(output_dir)
     @definition.specs.each do |spec|
+      exclude_version = EXCLUDES[ spec.name ]
+      if ( ! exclude_version.nil? )
+        if ( exclude_version == "#{spec.version.segments[0]}#{spec.version.segments[1]}" )
+          puts "Skipping #{spec.name} #{spec.version}"
+          next
+        end
+      end
       dump_spec( output_dir, spec )
     end
   end
 
   def dump_spec(output_dir, gemspec)
-    rpmspec_path = File.join( output_dir, "#{ruby_config.tree_prefix}#{gemspec.name}-gem.spec" )
+    converter = SpecConverter.new( ruby_config, gemspec )
+    rpmspec_path = File.join( output_dir, converter.rpm_name + '.spec' )
     puts "Writing #{rpmspec_path}"
     FileUtils.mkdir_p( File.dirname( rpmspec_path ) )
     File.open( rpmspec_path, 'w' ) do |file|
-      SpecConverter.new( ruby_config, gemspec, file ).dump
+      converter.out = file
+      converter.dump
     end
   end
 
@@ -87,11 +101,11 @@ class SpecConverter
 
   attr_accessor :gemspec
   attr_accessor :ruby_config
+  attr_accessor :out
 
-  def initialize(ruby_config, gemspec, out)
+  def initialize(ruby_config, gemspec)
     @ruby_config = ruby_config
     @gemspec = gemspec
-    @out = out
   end
   
   def emit(*args)
@@ -121,7 +135,13 @@ class SpecConverter
   end
 
   def rpm_name()
-    "#{ruby_config.tree_prefix}#{gemspec.name}"
+    major = gemspec.version.segments[0]
+    minor = gemspec.version.segments[2]
+    "#{ruby_config.tree_prefix}rubygem-#{gemspec.name}-#{major}#{minor}"
+  end
+
+  def rpm_arch
+    "noarch"
   end
 
   def version()
@@ -169,11 +189,12 @@ class SpecConverter
   end
 
   def dump_package_summary
-    emit "Name: %{tree_prefix}rubygem-%{gem_name}"
+    emit "Name: #{rpm_name}"
     emit "Version: #{version}"
     emit "Release: 1%{?dist}"
     emit "Group: Development/Languages"
     emit "License: GPLv2+ or Ruby"
+    emit "BuildArch: #{rpm_arch}"
     emit "Summary: #{summary}"
 
     if (gemspec.homepage)
@@ -222,8 +243,9 @@ class SpecConverter
     emit "%install"
     emit ""
     emit "rm -rf %{buildroot}"
-    emit "install -m 755 -d %{buildroot}%{gem_dir}"
     emit "install -m 755 -d %{buildroot}%{bin_dir}"
+    emit "install -m 755 -d %{buildroot}%{gem_dir}"
+    emit "install -m 755 -d %{buildroot}%{gem_dir}/gems/#{base_gem_package_name}/lib"
     emit "gem install --local --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies --platform #{platform} %{SOURCE0}"
     emit ""
   end
@@ -260,6 +282,13 @@ class SpecConverter
 end
 
 
-converter = BundleConverter.new( 'Gemfile' )
-converter.resolve!
-converter.dump_specs( 'specs/gems' )
+
+Gem.platforms.unshift( Gem::Platform::JAVA )
+
+ARGV.each do |arg|
+  ENV['BUNDLE_GEMFILE'] = arg
+  puts "Parsing #{arg}"
+  converter = BundleConverter.new( arg )
+  converter.resolve!
+  converter.dump_specs( 'specs/gems' )
+end

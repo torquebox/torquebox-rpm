@@ -1,1 +1,8 @@
 specs/gems/*
+log
+*.log
+build
+tmp
+*.swp
+.bundle
+sources-cache

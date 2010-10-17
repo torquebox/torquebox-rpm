@@ -1,16 +1,24 @@
-%define torquebox_version 1.0.0.Beta22
+%define jruby_version 1.5.3
 
 %global _binaries_in_noarch_packages_terminate_build 0
 
 Summary:        TorqueBox JRuby
 Name:           torquebox-jruby
-Version:        %{torquebox_version}
+Version:        %{jruby_version}
 Release:        1
 License:        LGPL
 BuildArch:      noarch
 Group:          Applications/System
-Source0:        http://repository.torquebox.org/maven2/releases/org/torquebox/torquebox-dist/1.0.0.Beta22/torquebox-dist-%{torquebox_version}-bin.zip
+Source0:        http://jruby.org.s3.amazonaws.com/downloads/%{jruby_version}/jruby-bin-%{jruby_version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+Provides: rubyabi(1.8-java)
+Provides: torquebox-rubygem(columnize)       = 0.3.1
+Provides: torquebox-rubygem(rake)            = 0.8.7
+Provides: torquebox-rubygem(rspec)           = 1.3.0
+Provides: torquebox-rubygem(ruby-debug)      = 0.10.3
+Provides: torquebox-rubygem(ruby-debug-base) = 0.10.3.2
+Provides: torquebox-rubygem(source)          = 0.0.1
 
 %description
 The TorqueBox JRuby Distribution
@@ -18,7 +26,7 @@ The TorqueBox JRuby Distribution
 %define __jar_repack %{nil}
 
 %prep
-%setup -T -b 0 -n torquebox-%{torquebox_version}
+%setup -n jruby-%{jruby_version}
 
 %install
 rm -Rf $RPM_BUILD_ROOT
@@ -28,8 +36,7 @@ cd %{_topdir}/BUILD
 install -d -m 755 $RPM_BUILD_ROOT/opt/
 
 # copy jruby
-cp -R torquebox-%{torquebox_version}/jruby $RPM_BUILD_ROOT/opt/
-rm -Rf $RPM_BUILD_ROOT/opt/jruby/lib/ruby/gems/1.8/cache
+cp -R jruby-%{jruby_version} $RPM_BUILD_ROOT/opt/jruby
 
 %clean
 rm -Rf $RPM_BUILD_ROOT
@@ -39,5 +46,5 @@ rm -Rf $RPM_BUILD_ROOT
 /
 
 %changelog
-* Mon Oct 04 2010 Bob McWhirter 
+* Sun Oct 17 2010 Bob McWhirter 
 - Initial release
