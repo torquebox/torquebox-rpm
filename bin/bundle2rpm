@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 
 require 'rubygems'
 
@@ -72,7 +73,7 @@ class BundleConverter
   end
 
   def dump_spec(output_dir, gemspec)
-    rpmspec_path = File.join( output_dir, "#{gemspec.name}.spec" )
+    rpmspec_path = File.join( output_dir, "#{ruby_config.tree_prefix}#{gemspec.name}-gem.spec" )
     puts "Writing #{rpmspec_path}"
     FileUtils.mkdir_p( File.dirname( rpmspec_path ) )
     File.open( rpmspec_path, 'w' ) do |file|
@@ -94,8 +95,13 @@ class SpecConverter
   end
   
   def emit(*args)
-    puts args
+    #puts args
     @out.puts( args )
+  end
+
+  def base_gem_package_name()
+    return "#{gem_name}-#{version}-#{platform}" if ( platform != 'ruby' )
+    "#{gem_name}-#{version}"
   end
 
   def gem_url()
@@ -140,6 +146,8 @@ class SpecConverter
     dump_provides
     dump_requires
 
+    dump_description 
+
     dump_prep
     dump_build
     dump_install
@@ -167,7 +175,6 @@ class SpecConverter
     emit "Group: Development/Languages"
     emit "License: GPLv2+ or Ruby"
     emit "Summary: #{summary}"
-    emit "Description: #{description}"
 
     if (gemspec.homepage)
       emit "URL: #{gemspec.homepage}"
@@ -185,9 +192,18 @@ class SpecConverter
   def dump_requires
     emit "Requires: ruby(abi) = %{ruby_abi}"
     emit ""
-    gemspec.dependencies.each do |dep|
-      emit "Requires: %{tree_prefix}rubygem(#{dep.name}) #{dep.requirement.to_rpm}"
+    gemspec.runtime_dependencies.each do |dep|
+      for req in dep.requirement.to_rpm 
+        emit "Requires: %{tree_prefix}rubygem(#{dep.name}) #{req}"
+      end
     end
+    emit ""
+  end
+
+  def dump_description
+    emit "%description"
+    emit ""
+    emit description
     emit ""
   end
 
@@ -208,7 +224,7 @@ class SpecConverter
     emit "rm -rf %{buildroot}"
     emit "install -m 755 -d %{buildroot}%{gem_dir}"
     emit "install -m 755 -d %{buildroot}%{bin_dir}"
-    emit "gem install --local --bindir %{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies --platform #{platform}"
+    emit "gem install --local --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies --platform #{platform} %{SOURCE0}"
     emit ""
   end
 
@@ -223,18 +239,15 @@ class SpecConverter
     emit "%files"
     emit ""
     emit "%defattr(-, root, root, -)"
-    for f in gemspec.executables 
-      emit "%{bin_dir}/#{f}"
-      emit "%{gem_dir}%{bin_dir}/#{f}"
-    end
-    emit "%{gem_dir}/gems/%{gem_name}-%{version}/"
-    emit "%{gem_dir}/cache/%{gemname}-%{version}.gem"
-    emit "%{gem_dir}/specifications/%{gemname}-%{version}.gemspec"
+    emit "%{bin_dir}/"
+    emit "%{gem_dir}/gems/#{base_gem_package_name}/"
+    emit "%{gem_dir}/cache/#{base_gem_package_name}.gem"
+    emit "%{gem_dir}/specifications/#{base_gem_package_name}.gemspec"
     if gemspec.has_rdoc 
-      emit "%doc %{gemdir}/doc/%{gemname}-%{version}"
+      emit "%doc %{gem_dir}/doc/#{base_gem_package_name}"
     end
     for f in gemspec.extra_rdoc_files
-      emit "%doc %{geminstdir}/#{f}"
+      emit "%doc %{gem_instdir}/#{f}"
     end
     emit ""
   end
@@ -249,4 +262,4 @@ end
 
 converter = BundleConverter.new( 'Gemfile' )
 converter.resolve!
-converter.dump_specs( 'specs' )
+converter.dump_specs( 'specs/gems' )
