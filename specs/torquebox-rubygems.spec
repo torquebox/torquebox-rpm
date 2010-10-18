@@ -8,6 +8,8 @@
 %global lib_dir      /opt/jruby/lib
 %global ruby_abi     1.8-java
 
+%global gem_cache_dir   ./jruby/lib/ruby/gems/1.8/cache
+
 %global gem_install  gem install --local --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies 
 
 %global _binaries_in_noarch_packages_terminate_build 0
@@ -46,13 +48,13 @@ install -m 755 -d %{buildroot}%{lib_dir}
 
 install -m 755 -d %{buildroot}%{gem_dir}
 
-%{gem_install} --platform ruby %{gem_dir}/cache/org.torquebox.rake-support-%{torquebox_version}.gem
-%{gem_install} --platform java %{gem_dir}/cache/org.torquebox.torquebox-container-foundation-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_dir}/cache/org.torquebox.torquebox-messaging-client-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_dir}/cache/org.torquebox.torquebox-messaging-container-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_dir}/cache/org.torquebox.torquebox-naming-client-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_dir}/cache/org.torquebox.torquebox-naming-container-%{torquebox_version}-java.gem
-%{gem_install} --platform ruby %{gem_dir}/cache/org.torquebox.vfs-%{torquebox_version}.gem
+%{gem_install} --platform ruby %{gem_cache_dir}/org.torquebox.rake-support-%{torquebox_version}.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-container-foundation-%{torquebox_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-messaging-client-%{torquebox_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-messaging-container-%{torquebox_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-naming-client-%{torquebox_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-naming-container-%{torquebox_version}-java.gem
+%{gem_install} --platform ruby %{gem_cache_dir}/org.torquebox.vfs-%{torquebox_version}.gem
 
 cp ./jruby/lib/jboss-*.jar %{buildroot}%{lib_dir}
 
