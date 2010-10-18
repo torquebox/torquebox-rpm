@@ -9,6 +9,7 @@ module Rumpler
       %r(^org.torquebox),
       %r(^rails$),
       %r(^rack$),
+      %r(^bundler$),
     ]
 
     SPEC_EXCLUDES = {
@@ -19,61 +20,83 @@ module Rumpler
       'ruby-debug-base'=>'010',
       'sources'=>'00',
       'rack'=>'*',
+      'jruby-openssl'=>'*',
     }
+    SPEC_EXCLUDES_REGEXPS = [
+      /^activerecord-jdbc/,
+      /^jdbc-/,
+    ]
 
     attr_accessor :gemfile
     attr_accessor :ruby_config
     attr_accessor :definition
 
     attr_accessor :output_dir
+
+    attr_accessor :inhibit_exclusions
   
     def initialize(gemfile, output_dir, ruby_config=Config.new)
       @gemfile = gemfile
       @ruby_config = ruby_config
       @output_dir = output_dir
+      @resolved = false
+      @inhibit_exclusions = false
     end
   
+    def resolve
+      return if @resolved
+      resolve!
+      @resolved = true
+    end
+
     def resolve!()
-      current_platform = Gem.platforms.compact.last
+      ENV['BUNDLE_GEMFILE'] = gemfile
       @definition = Bundler::Definition.build( @gemfile, @gemfile + '.lock', true )
-      @definition.dependencies.reject! do |dep| 
-        result = false
-        DEP_EXCLUDES.each do |regexp|
-          if ( regexp =~ dep.name )
-            puts "excluding #{dep.name}"
-            result = true 
-          end
-        end
-        result
-      end
+      @definition.dependencies.reject!{|dep|  should_exclude_dep?( dep.name ) }
       @definition.resolve_remotely!
+    end
+
+    def should_exclude_dep?(name)
+      return false if @inhibit_exclusions
+      DEP_EXCLUDES.each do |regexp|
+        return true if ( regexp =~ name )
+      end
+      false
+    end
+
+    def should_exclude_spec?(name, version)
+      return false if @inhibit_exclusions
+      exclude_versions = SPEC_EXCLUDES[ name ]
+      if ( ! exclude_versions.nil? )
+        test = "#{version.segments[0]}#{version.segments[1]}"
+        if ( ( exclude_versions.to_s == '*' ) || [ exclude_versions ].flatten.include?( test ) )
+          return true
+        end
+      end
+
+     SPEC_EXCLUDES_REGEXPS.each do |r|
+       return true if ( r =~ name )
+     end
+
+     false
     end
   
     def dump()
+      puts "Dumping #{gemfile}"
+      resolve()
       dump_specs()
     end
 
     def dump_specs()
       @definition.specs.each do |spec|
-        exclude_version = SPEC_EXCLUDES[ spec.name ]
-        if ( ! exclude_version.nil? )
-          puts spec.version.inspect
-          puts spec.version.segments.inspect
-          test = "#{spec.version.segments[0]}#{spec.version.segments[1]}"
-          puts "compare #{test} to #{exclude_version.inspect}"
-          if ( ( exclude_version.to_s == '*' ) || [ exclude_version ].flatten.include?( test ) )
-            puts "Skipping #{spec.name} #{spec.version}"
-            next
-          end
-        end
-        dump_spec(spec )
+        dump_spec(spec) unless should_exclude_spec?( spec.name, spec.version )
       end
     end
   
     def dump_spec(gemspec)
       converter = GemspecConverter.new( ruby_config, gemspec )
       rpmspec_path = File.join( output_dir, converter.rpm_name + '.spec' )
-      puts "Writing #{rpmspec_path}"
+      puts "Dumping #{rpmspec_path}"
       FileUtils.mkdir_p( File.dirname( rpmspec_path ) )
       File.open( rpmspec_path, 'w' ) do |file|
         converter.out = file

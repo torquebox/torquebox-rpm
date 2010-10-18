@@ -16,6 +16,10 @@ require 'rumpler/application_converter'
 require 'ostruct'
 
 batch = OpenStruct.new
+
+batch.output_dir         = './build'
+batch.inhibit_exclusions = false
+
 opts = OptionParser.new do |opts|
 
   opts.banner = "Usage: rumpler [options]"
@@ -23,23 +27,24 @@ opts = OptionParser.new do |opts|
   opts.separator ""
   opts.separator "Specific options:"
 
-  opts.on( '-a', '--application [APPDIR]' ) do |app_dir|
+  opts.on( '-a', '--application' ) do
     batch.mode = :application
-    batch.app_dir = app_dir || Dir.pwd
   end
 
-  opts.on( '-G', '--gemfile GEMFILE' ) do |gemfile|
+  opts.on( '-G', '--gemfile' ) do 
     batch.mode    = :gemfile
-    batch.gemfile = gemfile
   end
 
-  opts.on( '-g', '--gem GEMNAME' ) do |gem_name|
+  opts.on( '-g', '--gem' ) do 
     batch.mode    = :gem
-    batch.gem_name = gem_name
   end
 
   opts.on( '-o', '--output OUTPDIR' ) do |output_dir|
     batch.output_dir = output_dir
+  end
+
+  opts.on('-i', '--inhibit-exclusions', 'Inhibit default exclusions' ) do
+    batch.inhibit_exclusions = true
   end
 
   opts.on_tail("-h", "--help", "Show this message") do
@@ -52,13 +57,17 @@ end
 
 opts.parse!( ARGV )
 
-batch.output_dir ||= File.join( Dir.pwd, 'build' )
-
-puts batch.inspect
-
 case ( batch.mode )
   when :application
-    converter = Rumpler::ApplicationConverter.new( batch.app_dir, batch.output_dir ).dump
+    if ( ARGV.empty? )
+      converter = Rumpler::ApplicationConverter.new( Dir.pwd, batch.output_dir ).dump
+    else
+      puts "Argument not accepted yet, complain to Bob"
+    end
   when :gemfile
-    converter = Rumpler::GemfileConverter.new( batch.gemfile, batch.output_dir ).dump
+    ARGV.each do |gemfile|
+      converter = Rumpler::GemfileConverter.new( gemfile, batch.output_dir )
+      converter.inhibit_exclusions = batch.inhibit_exclusions
+      converter.dump
+    end
 end

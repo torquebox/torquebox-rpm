@@ -17,14 +17,11 @@ module Rumpler
     end
 
     def dump_dependencies()
-      puts "Dumping for #{app_dir}"
+      puts "Dumping #{app_dir}"
 
       gemfile = File.join( app_dir, 'Gemfile' )
 
-      ENV['BUNDLE_GEMFILE'] = gemfile
-      puts "Parsing #{gemfile} to #{output_dir}"
       @gemfile_converter = GemfileConverter.new( gemfile, output_dir )
-      @gemfile_converter.resolve!
       @gemfile_converter.dump()
     end
 

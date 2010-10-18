@@ -7,14 +7,14 @@
 %global ruby_abi     1.8-java
 
 Name: torquebox-rubygem-rack-11
-Version: 1.2.1
+Version: 1.1.0
 Release: 1%{?dist}
 Group: Development/Languages
 License: GPLv2+ or Ruby
 BuildArch: noarch
 Summary: a modular Ruby webserver interface
 URL: http://rack.rubyforge.org
-Source0: http://rubygems.org/gems/rack-1.2.1.gem
+Source0: http://rubygems.org/gems/rack-1.1.0.gem
 
 Provides: %{tree_prefix}rubygem(%{gem_name}) = %{version}
 
@@ -40,7 +40,7 @@ Also see http://rack.rubyforge.org.
 rm -rf %{buildroot}
 install -m 755 -d %{buildroot}%{bin_dir}
 install -m 755 -d %{buildroot}%{gem_dir}
-install -m 755 -d %{buildroot}%{gem_dir}/gems/rack-1.2.1/lib
+install -m 755 -d %{buildroot}%{gem_dir}/gems/rack-1.1.0/lib
 gem install --local --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies --platform ruby %{SOURCE0}
 
 %clean
@@ -51,10 +51,10 @@ rm -rf %{buildroot}
 
 %defattr(-, root, root, -)
 %{bin_dir}/
-%{gem_dir}/gems/rack-1.2.1/
-%{gem_dir}/cache/rack-1.2.1.gem
-%{gem_dir}/specifications/rack-1.2.1.gemspec
-%doc %{gem_dir}/doc/rack-1.2.1
+%{gem_dir}/gems/rack-1.1.0/
+%{gem_dir}/cache/rack-1.1.0.gem
+%{gem_dir}/specifications/rack-1.1.0.gemspec
+%doc %{gem_dir}/doc/rack-1.1.0
 
 %changelog
 
