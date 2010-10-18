@@ -67,6 +67,7 @@ class BundleConverter
   end
 
   def resolve!()
+    current_platform = Gem.platforms.compact.last
     @definition = Bundler::Definition.build( @gemfile, @gemfile + '.lock', true )
     @definition.resolve_remotely!
   end
@@ -283,7 +284,7 @@ end
 
 
 
-Gem.platforms.unshift( Gem::Platform::JAVA )
+Gem.platforms.push( Gem::Platform::JAVA )
 
 ARGV.each do |arg|
   ENV['BUNDLE_GEMFILE'] = arg
