@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+
+$: << File.join( File.dirname(__FILE__), '..', 'lib' )
+
+require 'rubygems'
+require 'bundler'
+
+Gem.platforms.push( Gem::Platform::JAVA )
+
+require 'rumpler/config'
+require 'rumpler/gemfile_converter'
+require 'rumpler/gemspec_converter'
+
+require 'rumpler/application_converter'
+
+require 'ostruct'
+
+batch = OpenStruct.new
+opts = OptionParser.new do |opts|
+
+  opts.banner = "Usage: rumpler [options]"
+
+  opts.separator ""
+  opts.separator "Specific options:"
+
+  opts.on( '-a', '--application [APPDIR]' ) do |app_dir|
+    batch.mode = :application
+    batch.app_dir = app_dir || Dir.pwd
+  end
+
+  opts.on( '-G', '--gemfile GEMFILE' ) do |gemfile|
+    batch.mode    = :gemfile
+    batch.gemfile = gemfile
+  end
+
+  opts.on( '-g', '--gem GEMNAME' ) do |gem_name|
+    batch.mode    = :gem
+    batch.gem_name = gem_name
+  end
+
+  opts.on( '-o', '--output OUTPDIR' ) do |output_dir|
+    batch.output_dir = output_dir
+  end
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+
+end
+
+opts.parse!( ARGV )
+
+batch.output_dir ||= File.join( Dir.pwd, 'build' )
+
+puts batch.inspect
+
+case ( batch.mode )
+  when :application
+    converter = Rumpler::ApplicationConverter.new( batch.app_dir, batch.output_dir ).dump
+  when :gemfile
+    converter = Rumpler::GemfileConverter.new( batch.gemfile, batch.output_dir ).dump
+end
