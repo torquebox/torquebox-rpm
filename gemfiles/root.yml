@@ -1,0 +1,7 @@
+inherent:
+  - Gemfile-core
+base:
+  - Gemfile-base
+  - Gemfile-jdbc
+  - Gemfile-rails2
+  - Gemfile-rails3
