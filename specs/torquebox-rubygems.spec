@@ -1,6 +1,9 @@
-%define torquebox_version 1.0.0.Beta22
-%define jruby_version     1.5.3
 
+%define torquebox_build_number   795
+%define torquebox_version        1.0.0.Beta23-SNAPSHOT
+%define torquebox_rpm_version    1.0.0.Beta23.SNAPSHOT
+%define torquebox_gems_version   1.0.0.Beta23
+%define jruby_version            1.5.3
 
 %global ruby_sitelib /opt/jruby/lib/ruby/site_ruby/1.8
 %global gem_dir      /opt/jruby/lib/ruby/gems/1.8
@@ -16,23 +19,24 @@
 
 Summary:        TorqueBox Rubygems
 Name:           torquebox-rubygems
-Version:        %{torquebox_version}
+Version:        %{torquebox_rpm_version}
 Release:        1
 License:        LGPL
 BuildArch:      noarch
 Group:          Applications/System
-Source0:        http://repository.torquebox.org/maven2/releases/org/torquebox/torquebox-dist/1.0.0.Beta22/torquebox-dist-%{torquebox_version}-bin.zip
+#Source0:        http://repository.torquebox.org/maven2/releases/org/torquebox/torquebox-dist/1.0.0.Beta22/torquebox-dist-%{torquebox_version}-bin.zip
+Source0:         http://ci.stormgrind.org/repository/download/bt7/%{torquebox_build_number}:id/torquebox-dist-bin.zip?guest=1
 
 Requires: ruby(abi)       = %{ruby_abi}
 Requires: torquebox-jruby = %{jruby_version}
 
-Provides: torquebox-rubygem(org.torquebox.rake-support)               = %{torquebox_version}
-Provides: torquebox-rubygem(org.torquebox.torquebox-container)        = %{torquebox_version}
-Provides: torquebox-rubygem(org.torquebox.torquebox-messaging)        = %{torquebox_version}
-Provides: torquebox-rubygem(org.torquebox.torquebox-messaging)        = %{torquebox_version}
-Provides: torquebox-rubygem(org.torquebox.torquebox-naming-client)    = %{torquebox_version}
-Provides: torquebox-rubygem(org.torquebox.torquebox-naming-container) = %{torquebox_version}
-Provides: torquebox-rubygem(org.torquebox.vfs-1.0.0.Beta22)           = %{torquebox_version}
+Provides: torquebox-rubygem(org.torquebox.rake-support)               = %{torquebox_rpm_version}
+Provides: torquebox-rubygem(org.torquebox.torquebox-container)        = %{torquebox_rpm_version}
+Provides: torquebox-rubygem(org.torquebox.torquebox-messaging)        = %{torquebox_rpm_version}
+Provides: torquebox-rubygem(org.torquebox.torquebox-messaging)        = %{torquebox_rpm_version}
+Provides: torquebox-rubygem(org.torquebox.torquebox-naming-client)    = %{torquebox_rpm_version}
+Provides: torquebox-rubygem(org.torquebox.torquebox-naming-container) = %{torquebox_rpm_version}
+Provides: torquebox-rubygem(org.torquebox.vfs-1.0.0.Beta22)           = %{torquebox_rpm_version}
 
 %description
   The TorqueBox Rubygems 
@@ -48,13 +52,13 @@ install -m 755 -d %{buildroot}%{lib_dir}
 
 install -m 755 -d %{buildroot}%{gem_dir}
 
-%{gem_install} --platform ruby %{gem_cache_dir}/org.torquebox.rake-support-%{torquebox_version}.gem
-%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-container-foundation-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-messaging-client-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-messaging-container-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-naming-client-%{torquebox_version}-java.gem
-%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-naming-container-%{torquebox_version}-java.gem
-%{gem_install} --platform ruby %{gem_cache_dir}/org.torquebox.vfs-%{torquebox_version}.gem
+%{gem_install} --platform ruby %{gem_cache_dir}/org.torquebox.rake-support-%{torquebox_gems_version}.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-container-foundation-%{torquebox_gems_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-messaging-client-%{torquebox_gems_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-messaging-container-%{torquebox_gems_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-naming-client-%{torquebox_gems_version}-java.gem
+%{gem_install} --platform java %{gem_cache_dir}/org.torquebox.torquebox-naming-container-%{torquebox_gems_version}-java.gem
+%{gem_install} --platform ruby %{gem_cache_dir}/org.torquebox.vfs-%{torquebox_gems_version}.gem
 
 cp ./jruby/lib/jboss-*.jar %{buildroot}%{lib_dir}
 
