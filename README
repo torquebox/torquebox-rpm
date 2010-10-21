@@ -1,0 +1,2 @@
+
+../rumpler/bin/rumpler -r gemfiles/root.yml -f -o ./specs/gems/ -n torquebox-rubygems-dependencies -V 1.0.0.Beta23.SNAPSHOT
