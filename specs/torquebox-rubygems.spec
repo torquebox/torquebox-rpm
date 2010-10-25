@@ -1,5 +1,5 @@
 
-%define torquebox_build_number   840
+%define torquebox_build_number   864
 %define torquebox_version        1.0.0.Beta23-SNAPSHOT
 %define torquebox_rpm_version    1.0.0.Beta23.SNAPSHOT
 %define torquebox_gems_version   1.0.0.Beta23
