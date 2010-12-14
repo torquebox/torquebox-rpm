@@ -1,9 +1,9 @@
 
-%define torquebox_build_number   1248
-%define torquebox_version        1.0.0.Beta23-SNAPSHOT
-%define torquebox_rpm_version    1.0.0.Beta23.SNAPSHOT
-%define torquebox_gems_version   1.0.0.Beta23
-%define jruby_version            1.5.3
+%define torquebox_build_number   1357
+%define torquebox_version        1.0.0.RC1-SNAPSHOT
+%define torquebox_rpm_version    1.0.0.RC1.SNAPSHOT
+%define torquebox_gems_version   1.0.0.RC1
+%define jruby_version            1.5.6
 
 %global ruby_sitelib /opt/jruby/lib/ruby/site_ruby/1.8
 %global gem_dir      /opt/jruby/lib/ruby/gems/1.8
@@ -36,7 +36,7 @@ Provides: torquebox-rubygem(org.torquebox.torquebox-messaging)        = %{torque
 Provides: torquebox-rubygem(org.torquebox.torquebox-messaging)        = %{torquebox_rpm_version}
 Provides: torquebox-rubygem(org.torquebox.torquebox-naming-client)    = %{torquebox_rpm_version}
 Provides: torquebox-rubygem(org.torquebox.torquebox-naming-container) = %{torquebox_rpm_version}
-Provides: torquebox-rubygem(org.torquebox.vfs-1.0.0.Beta22)           = %{torquebox_rpm_version}
+Provides: torquebox-rubygem(org.torquebox.vfs)                        = %{torquebox_rpm_version}
 
 %description
   The TorqueBox Rubygems 
@@ -71,5 +71,8 @@ rm -Rf %{buildroot}
 /
 
 %changelog
+* Tue Dec 14 2010 Ben Browning
+- Upgrade to 1.0.0.RC1-SNAPSHOT and JRuby 1.5.6
+
 * Mon Oct 04 2010 Bob McWhirter 
 - Initial release
