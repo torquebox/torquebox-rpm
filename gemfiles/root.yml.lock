@@ -16,14 +16,14 @@
 - :version: &id002 
     - 0
     - 7
-    - 1
+    - 2
   :name: jruby-openssl
   :source: http://rubygems.org/
   :gem_version: !ruby/object:Gem::Version 
     hash: 6
     prerelease: false
     segments: *id002
-    version: 0.7.1
+    version: 0.7.2
   :platform: ruby
 - :version: &id003 
     - 1
