@@ -2,5 +2,3 @@ inherent:
   - Gemfile-core
 base:
   - Gemfile-base
-  - Gemfile-rails2
-  - Gemfile-rails3
