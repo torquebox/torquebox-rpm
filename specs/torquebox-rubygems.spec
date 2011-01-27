@@ -11,7 +11,7 @@
 %global lib_dir      /opt/jruby/lib
 %global ruby_abi     1.8-java
 
-%global gem_install  gem install --pre --source http://rubygems.torquebox.org --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies 
+%global gem_install  gem install --pre --source http://rubygems.torquebox.org --bindir %{buildroot}%{bin_dir} --install-dir %{buildroot}%{gem_dir} --force --ignore-dependencies -v %{torquebox_gems_version}
 
 %global _binaries_in_noarch_packages_terminate_build 0
 
@@ -49,14 +49,14 @@ install -m 755 -d %{buildroot}%{lib_dir}
 
 install -m 755 -d %{buildroot}%{gem_dir}
 
-%{gem_install} --platform ruby org.torquebox.capistrano-support-%{torquebox_gems_version}.gem
-%{gem_install} --platform ruby org.torquebox.rake-support-%{torquebox_gems_version}.gem
-%{gem_install} --platform java org.torquebox.torquebox-container-foundation-%{torquebox_gems_version}-java.gem
-%{gem_install} --platform java org.torquebox.torquebox-messaging-client-%{torquebox_gems_version}-java.gem
-%{gem_install} --platform java org.torquebox.torquebox-messaging-container-%{torquebox_gems_version}-java.gem
-%{gem_install} --platform java org.torquebox.torquebox-naming-client-%{torquebox_gems_version}-java.gem
-%{gem_install} --platform java org.torquebox.torquebox-naming-container-%{torquebox_gems_version}-java.gem
-%{gem_install} --platform ruby org.torquebox.vfs-%{torquebox_gems_version}.gem
+%{gem_install} --platform ruby org.torquebox.capistrano-support 
+%{gem_install} --platform ruby org.torquebox.rake-support 
+%{gem_install} --platform java org.torquebox.torquebox-container-foundation 
+%{gem_install} --platform java org.torquebox.torquebox-messaging-client 
+%{gem_install} --platform java org.torquebox.torquebox-messaging-container 
+%{gem_install} --platform java org.torquebox.torquebox-naming-client 
+%{gem_install} --platform java org.torquebox.torquebox-naming-container 
+%{gem_install} --platform ruby org.torquebox.vfs 
 
 cp ./jruby/lib/jboss-*.jar %{buildroot}%{lib_dir}
 
