@@ -1,8 +1,8 @@
 
-%define torquebox_build_number   1357
-%define torquebox_version        1.0.0.RC1-SNAPSHOT
-%define torquebox_rpm_version    1.0.0.RC1.SNAPSHOT
-%define torquebox_gems_version   1.0.0.RC1
+%define torquebox_build_number   1761
+%define torquebox_version        1.0.0.CR1-SNAPSHOT
+%define torquebox_rpm_version    1.0.0.CR1.SNAPSHOT
+%define torquebox_gems_version   1.0.0.CR1
 %define jruby_version            1.5.6
 
 %global ruby_sitelib /opt/jruby/lib/ruby/site_ruby/1.8
