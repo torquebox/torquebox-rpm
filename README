@@ -1,2 +1,6 @@
+DO NOT USE THIS REPOSITORY.
 
-../rumpler/bin/rumpler -r gemfiles/root.yml -f -o ./specs/gems/ -n torquebox-rubygems-dependencies -V 1.0.0.Beta23.SNAPSHOT
+IT HAS BEEN DEPRECATED.
+
+USE INSTEAD https://github.com/torquebox/torquebox-appliances
+
